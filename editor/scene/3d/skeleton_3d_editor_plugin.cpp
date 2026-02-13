@@ -61,6 +61,45 @@ void BonePropertiesEditor::create_editors() {
 	enabled_checkbox->set_selectable(false);
 	enabled_checkbox->connect("property_changed", callable_mp(this, &BonePropertiesEditor::_value_changed));
 	section->get_vbox()->add_child(enabled_checkbox);
+	// RayIK UI
+	ray_ik_enabled_checkbox = memnew(EditorPropertyCheck());
+	ray_ik_enabled_checkbox->set_label("Ray IK Enabled");
+	ray_ik_enabled_checkbox->set_selectable(false);
+	ray_ik_enabled_checkbox->connect("property_changed", callable_mp(this, &BonePropertiesEditor::_value_changed));
+	section->get_vbox()->add_child(ray_ik_enabled_checkbox);
+
+	ray_ik_chain_length_property = memnew(EditorPropertyInteger());
+	ray_ik_chain_length_property->set_label("Ray IK Chain Length");
+	ray_ik_chain_length_property->setup(0, 100, 1, false, false);
+	ray_ik_chain_length_property->set_selectable(false);
+	ray_ik_chain_length_property->connect("property_changed", callable_mp(this, &BonePropertiesEditor::_value_changed));
+	section->get_vbox()->add_child(ray_ik_chain_length_property);
+	// RayIK UI
+	ray_ik_enabled_checkbox = memnew(EditorPropertyCheck());
+	ray_ik_enabled_checkbox->set_label("Ray IK Enabled");
+	ray_ik_enabled_checkbox->set_selectable(false);
+	ray_ik_enabled_checkbox->connect("property_changed", callable_mp(this, &BonePropertiesEditor::_value_changed));
+	section->get_vbox()->add_child(ray_ik_enabled_checkbox);
+
+	ray_ik_chain_length_property = memnew(EditorPropertyInteger());
+	ray_ik_chain_length_property->set_label("Ray IK Chain Length");
+	ray_ik_chain_length_property->setup(0, 100, 1, false, false);
+	ray_ik_chain_length_property->set_selectable(false);
+	ray_ik_chain_length_property->connect("property_changed", callable_mp(this, &BonePropertiesEditor::_value_changed));
+	section->get_vbox()->add_child(ray_ik_chain_length_property);
+	// RayIK UI
+	ray_ik_enabled_checkbox = memnew(EditorPropertyCheck());
+	ray_ik_enabled_checkbox->set_label("Ray IK Enabled");
+	ray_ik_enabled_checkbox->set_selectable(false);
+	ray_ik_enabled_checkbox->connect("property_changed", callable_mp(this, &BonePropertiesEditor::_value_changed));
+	section->get_vbox()->add_child(ray_ik_enabled_checkbox);
+
+	ray_ik_chain_length_property = memnew(EditorPropertyInteger());
+	ray_ik_chain_length_property->set_label("Ray IK Chain Length");
+	ray_ik_chain_length_property->setup(0, 100, 1, false, false);
+	ray_ik_chain_length_property->set_selectable(false);
+	ray_ik_chain_length_property->connect("property_changed", callable_mp(this, &BonePropertiesEditor::_value_changed));
+	section->get_vbox()->add_child(ray_ik_chain_length_property);
 
 	// Position property.
 	position_property = memnew(EditorPropertyVector3());
@@ -231,6 +270,41 @@ void BonePropertiesEditor::set_keyable(const bool p_keyable) {
 void BonePropertiesEditor::set_target(const String &p_prop) {
 	enabled_checkbox->set_object_and_property(skeleton, p_prop + "enabled");
 	enabled_checkbox->update_property();
+	ray_ik_enabled_checkbox->set_object_and_property(skeleton, p_prop + "ray_ik_enabled");
+	ray_ik_enabled_checkbox->update_property();
+
+	ray_ik_chain_length_property->set_object_and_property(skeleton, p_prop + "ray_ik_chain_length");
+	ray_ik_chain_length_property->update_property();
+	ray_ik_enabled_checkbox->set_object_and_property(skeleton, p_prop + "ray_ik_enabled");
+	ray_ik_enabled_checkbox->update_property();
+	ray_ik_enabled_checkbox->set_object_and_property(skeleton, p_prop + "ray_ik_enabled");
+	ray_ik_enabled_checkbox->update_property();
+
+	ray_ik_chain_length_property->set_object_and_property(skeleton, p_prop + "ray_ik_chain_length");
+	ray_ik_chain_length_property->update_property();
+
+	ray_ik_chain_length_property->set_object_and_property(skeleton, p_prop + "ray_ik_chain_length");
+	ray_ik_chain_length_property->update_property();
+	ray_ik_enabled_checkbox->set_object_and_property(skeleton, p_prop + "ray_ik_enabled");
+	ray_ik_enabled_checkbox->update_property();
+	ray_ik_enabled_checkbox->set_object_and_property(skeleton, p_prop + "ray_ik_enabled");
+	ray_ik_enabled_checkbox->update_property();
+
+	ray_ik_chain_length_property->set_object_and_property(skeleton, p_prop + "ray_ik_chain_length");
+	ray_ik_chain_length_property->update_property();
+	ray_ik_enabled_checkbox->set_object_and_property(skeleton, p_prop + "ray_ik_enabled");
+	ray_ik_enabled_checkbox->update_property();
+	ray_ik_enabled_checkbox->set_object_and_property(skeleton, p_prop + "ray_ik_enabled");
+	ray_ik_enabled_checkbox->update_property();
+
+	ray_ik_chain_length_property->set_object_and_property(skeleton, p_prop + "ray_ik_chain_length");
+	ray_ik_chain_length_property->update_property();
+
+	ray_ik_chain_length_property->set_object_and_property(skeleton, p_prop + "ray_ik_chain_length");
+	ray_ik_chain_length_property->update_property();
+
+	ray_ik_chain_length_property->set_object_and_property(skeleton, p_prop + "ray_ik_chain_length");
+	ray_ik_chain_length_property->update_property();
 
 	position_property->set_object_and_property(skeleton, p_prop + "position");
 	position_property->update_property();
@@ -281,8 +355,145 @@ void BonePropertiesEditor::_update_properties() {
 				if (split[2] == "enabled") {
 					enabled_checkbox->set_read_only(E.usage & PROPERTY_USAGE_READ_ONLY);
 					enabled_checkbox->update_property();
+	ray_ik_enabled_checkbox->set_object_and_property(skeleton, p_prop + "ray_ik_enabled");
+	ray_ik_enabled_checkbox->update_property();
+
+	ray_ik_chain_length_property->set_object_and_property(skeleton, p_prop + "ray_ik_chain_length");
+	ray_ik_chain_length_property->update_property();
+	ray_ik_enabled_checkbox->set_object_and_property(skeleton, p_prop + "ray_ik_enabled");
+	ray_ik_enabled_checkbox->update_property();
+	ray_ik_enabled_checkbox->set_object_and_property(skeleton, p_prop + "ray_ik_enabled");
+	ray_ik_enabled_checkbox->update_property();
+
+	ray_ik_chain_length_property->set_object_and_property(skeleton, p_prop + "ray_ik_chain_length");
+	ray_ik_chain_length_property->update_property();
+
+	ray_ik_chain_length_property->set_object_and_property(skeleton, p_prop + "ray_ik_chain_length");
+	ray_ik_chain_length_property->update_property();
+	ray_ik_enabled_checkbox->set_object_and_property(skeleton, p_prop + "ray_ik_enabled");
+	ray_ik_enabled_checkbox->update_property();
+	ray_ik_enabled_checkbox->set_object_and_property(skeleton, p_prop + "ray_ik_enabled");
+	ray_ik_enabled_checkbox->update_property();
+
+	ray_ik_chain_length_property->set_object_and_property(skeleton, p_prop + "ray_ik_chain_length");
+	ray_ik_chain_length_property->update_property();
+	ray_ik_enabled_checkbox->set_object_and_property(skeleton, p_prop + "ray_ik_enabled");
+	ray_ik_enabled_checkbox->update_property();
+	ray_ik_enabled_checkbox->set_object_and_property(skeleton, p_prop + "ray_ik_enabled");
+	ray_ik_enabled_checkbox->update_property();
+
+	ray_ik_chain_length_property->set_object_and_property(skeleton, p_prop + "ray_ik_chain_length");
+	ray_ik_chain_length_property->update_property();
+
+	ray_ik_chain_length_property->set_object_and_property(skeleton, p_prop + "ray_ik_chain_length");
+	ray_ik_chain_length_property->update_property();
+
+	ray_ik_chain_length_property->set_object_and_property(skeleton, p_prop + "ray_ik_chain_length");
+	ray_ik_chain_length_property->update_property();
 					enabled_checkbox->update_editor_property_status();
 					enabled_checkbox->queue_redraw();
+				}enabled_checkbox->queue_redraw();
+				}
+				if (split[2] == "ray_ik_enabled") {
+					ray_ik_enabled_checkbox->set_read_only(E.usage & PROPERTY_USAGE_READ_ONLY);
+					ray_ik_enabled_checkbox->update_property();
+					ray_ik_enabled_checkbox->update_editor_property_status();
+				}
+				if (split[2] == "ray_ik_chain_length") {
+					ray_ik_chain_length_property->set_read_only(E.usage & PROPERTY_USAGE_READ_ONLY);
+					ray_ik_chain_length_property->update_property();
+					ray_ik_chain_length_property->update_editor_property_status();
+				}enabled_checkbox->queue_redraw();
+				}enabled_checkbox->queue_redraw();
+				}
+				if (split[2] == "ray_ik_enabled") {
+					ray_ik_enabled_checkbox->set_read_only(E.usage & PROPERTY_USAGE_READ_ONLY);
+					ray_ik_enabled_checkbox->update_property();
+					ray_ik_enabled_checkbox->update_editor_property_status();
+				}
+				if (split[2] == "ray_ik_chain_length") {
+					ray_ik_chain_length_property->set_read_only(E.usage & PROPERTY_USAGE_READ_ONLY);
+					ray_ik_chain_length_property->update_property();
+					ray_ik_chain_length_property->update_editor_property_status();
+				}
+				if (split[2] == "ray_ik_enabled") {
+					ray_ik_enabled_checkbox->set_read_only(E.usage & PROPERTY_USAGE_READ_ONLY);
+					ray_ik_enabled_checkbox->update_property();
+	ray_ik_enabled_checkbox->set_object_and_property(skeleton, p_prop + "ray_ik_enabled");
+	ray_ik_enabled_checkbox->update_property();
+
+	ray_ik_chain_length_property->set_object_and_property(skeleton, p_prop + "ray_ik_chain_length");
+	ray_ik_chain_length_property->update_property();
+					ray_ik_enabled_checkbox->update_editor_property_status();
+				}
+				if (split[2] == "ray_ik_chain_length") {
+					ray_ik_chain_length_property->set_read_only(E.usage & PROPERTY_USAGE_READ_ONLY);
+					ray_ik_chain_length_property->update_property();
+					ray_ik_chain_length_property->update_editor_property_status();
+				}enabled_checkbox->queue_redraw();
+				}enabled_checkbox->queue_redraw();
+				}
+				if (split[2] == "ray_ik_enabled") {
+					ray_ik_enabled_checkbox->set_read_only(E.usage & PROPERTY_USAGE_READ_ONLY);
+					ray_ik_enabled_checkbox->update_property();
+					ray_ik_enabled_checkbox->update_editor_property_status();
+				}
+				if (split[2] == "ray_ik_chain_length") {
+					ray_ik_chain_length_property->set_read_only(E.usage & PROPERTY_USAGE_READ_ONLY);
+					ray_ik_chain_length_property->update_property();
+					ray_ik_chain_length_property->update_editor_property_status();
+				}enabled_checkbox->queue_redraw();
+				}enabled_checkbox->queue_redraw();
+				}
+				if (split[2] == "ray_ik_enabled") {
+					ray_ik_enabled_checkbox->set_read_only(E.usage & PROPERTY_USAGE_READ_ONLY);
+					ray_ik_enabled_checkbox->update_property();
+					ray_ik_enabled_checkbox->update_editor_property_status();
+				}
+				if (split[2] == "ray_ik_chain_length") {
+					ray_ik_chain_length_property->set_read_only(E.usage & PROPERTY_USAGE_READ_ONLY);
+					ray_ik_chain_length_property->update_property();
+					ray_ik_chain_length_property->update_editor_property_status();
+				}
+				if (split[2] == "ray_ik_enabled") {
+					ray_ik_enabled_checkbox->set_read_only(E.usage & PROPERTY_USAGE_READ_ONLY);
+					ray_ik_enabled_checkbox->update_property();
+	ray_ik_enabled_checkbox->set_object_and_property(skeleton, p_prop + "ray_ik_enabled");
+	ray_ik_enabled_checkbox->update_property();
+
+	ray_ik_chain_length_property->set_object_and_property(skeleton, p_prop + "ray_ik_chain_length");
+	ray_ik_chain_length_property->update_property();
+					ray_ik_enabled_checkbox->update_editor_property_status();
+				}
+				if (split[2] == "ray_ik_chain_length") {
+					ray_ik_chain_length_property->set_read_only(E.usage & PROPERTY_USAGE_READ_ONLY);
+					ray_ik_chain_length_property->update_property();
+					ray_ik_chain_length_property->update_editor_property_status();
+				}
+				if (split[2] == "ray_ik_enabled") {
+					ray_ik_enabled_checkbox->set_read_only(E.usage & PROPERTY_USAGE_READ_ONLY);
+					ray_ik_enabled_checkbox->update_property();
+	ray_ik_enabled_checkbox->set_object_and_property(skeleton, p_prop + "ray_ik_enabled");
+	ray_ik_enabled_checkbox->update_property();
+
+	ray_ik_chain_length_property->set_object_and_property(skeleton, p_prop + "ray_ik_chain_length");
+	ray_ik_chain_length_property->update_property();
+	ray_ik_enabled_checkbox->set_object_and_property(skeleton, p_prop + "ray_ik_enabled");
+	ray_ik_enabled_checkbox->update_property();
+	ray_ik_enabled_checkbox->set_object_and_property(skeleton, p_prop + "ray_ik_enabled");
+	ray_ik_enabled_checkbox->update_property();
+
+	ray_ik_chain_length_property->set_object_and_property(skeleton, p_prop + "ray_ik_chain_length");
+	ray_ik_chain_length_property->update_property();
+
+	ray_ik_chain_length_property->set_object_and_property(skeleton, p_prop + "ray_ik_chain_length");
+	ray_ik_chain_length_property->update_property();
+					ray_ik_enabled_checkbox->update_editor_property_status();
+				}
+				if (split[2] == "ray_ik_chain_length") {
+					ray_ik_chain_length_property->set_read_only(E.usage & PROPERTY_USAGE_READ_ONLY);
+					ray_ik_chain_length_property->update_property();
+					ray_ik_chain_length_property->update_editor_property_status();
 				}
 				if (split[2] == "position") {
 					position_property->set_read_only(E.usage & PROPERTY_USAGE_READ_ONLY);
