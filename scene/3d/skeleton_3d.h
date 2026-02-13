@@ -67,7 +67,7 @@ class Skeleton3D : public Node3D {
 
 #ifdef TOOLS_ENABLED
 	bool saving = false;
-#endif // TOOLS_ENABLED
+#endif //TOOLS_ENABLED
 
 #if !defined(DISABLE_DEPRECATED) && !defined(PHYSICS_3D_DISABLED)
 	bool animate_physical_bones = true;
@@ -130,6 +130,8 @@ private:
 		real_t global_pose_override_amount = 0.0;
 		bool global_pose_override_reset = false;
 		Transform3D global_pose_override;
+		bool ray_ik_enabled = false;
+    	int ray_ik_chain_length = 0;
 #endif // _DISABLE_DEPRECATED
 	};
 
@@ -224,6 +226,7 @@ public:
 	// Skeleton creation API
 	uint64_t get_version() const;
 	int add_bone(const String &p_name);
+	void remove_bone(int p_bone);
 	int find_bone(const String &p_name) const;
 	String get_bone_name(int p_bone) const;
 	void set_bone_name(int p_bone, const String &p_name);
@@ -246,6 +249,10 @@ public:
 	Transform3D get_bone_global_rest(int p_bone) const;
 
 	void set_bone_enabled(int p_bone, bool p_enabled);
+	void set_bone_ray_ik_enabled(int p_bone, bool p_enabled);
+	bool is_bone_ray_ik_enabled(int p_bone) const;
+	void set_bone_ray_ik_chain_length(int p_bone, int p_length);
+	int get_bone_ray_ik_chain_length(int p_bone) const;
 	bool is_bone_enabled(int p_bone) const;
 
 	void set_show_rest_only(bool p_enabled);

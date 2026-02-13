@@ -61,7 +61,7 @@ SkinReference::~SkinReference() {
 	if (skeleton_node) {
 		skeleton_node->skin_bindings.erase(this);
 	}
-	RS::get_singleton()->free_rid(skeleton);
+	RS::get_singleton()->free(skeleton);
 }
 
 ///////////////////////////////////////
@@ -942,7 +942,7 @@ void Skeleton3D::_update_deferred(UpdateFlag p_update_flag) {
 			_notification(NOTIFICATION_UPDATE_SKELETON);
 			return;
 		}
-#endif // TOOLS_ENABLED
+#endif //TOOLS_ENABLED
 		if (update_flags == UPDATE_FLAG_NONE && !updating) {
 			notify_deferred_thread_group(NOTIFICATION_UPDATE_SKELETON); // It must never be called more than once in a single frame.
 		}
@@ -1177,7 +1177,7 @@ void Skeleton3D::_process_modifiers() {
 		if (saving && !mod->is_processed_on_saving()) {
 			continue;
 		}
-#endif // TOOLS_ENABLED
+#endif //TOOLS_ENABLED
 		real_t influence = mod->get_influence();
 		if (influence < 1.0) {
 			LocalVector<Transform3D> old_poses;
@@ -1222,6 +1222,12 @@ void Skeleton3D::remove_child_notify(Node *p_child) {
 }
 
 void Skeleton3D::_bind_methods() {
+	// RayIK Properties
+	ClassDB::bind_method(D_METHOD("update_ray_ik", "bone_idx", "target"), &Skeleton3D::_update_ray_ik);
+	ClassDB::bind_method(D_METHOD("set_bone_ray_ik_enabled", "bone_idx", "enabled"), &Skeleton3D::set_bone_ray_ik_enabled);
+	ClassDB::bind_method(D_METHOD("is_bone_ray_ik_enabled", "bone_idx"), &Skeleton3D::is_bone_ray_ik_enabled);
+	ClassDB::bind_method(D_METHOD("set_bone_ray_ik_chain_length", "bone_idx", "length"), &Skeleton3D::set_bone_ray_ik_chain_length);
+	ClassDB::bind_method(D_METHOD("get_bone_ray_ik_chain_length", "bone_idx"), &Skeleton3D::get_bone_ray_ik_chain_length);
 	ClassDB::bind_method(D_METHOD("add_bone", "name"), &Skeleton3D::add_bone);
 	ClassDB::bind_method(D_METHOD("find_bone", "name"), &Skeleton3D::find_bone);
 	ClassDB::bind_method(D_METHOD("get_bone_name", "bone_idx"), &Skeleton3D::get_bone_name);
@@ -1422,5 +1428,69 @@ Skeleton3D::~Skeleton3D() {
 	// Some skins may remain bound.
 	for (SkinReference *E : skin_bindings) {
 		E->skeleton_node = nullptr;
+	}
+}
+
+void Skeleton3D::set_bone_ray_ik_enabled(int p_bone, bool p_enabled) {
+	ERR_FAIL_INDEX(p_bone, bones.size());
+	bones.write[p_bone].ray_ik_enabled = p_enabled;
+	notify_property_list_changed();
+}
+
+bool Skeleton3D::is_bone_ray_ik_enabled(int p_bone) const {
+	ERR_FAIL_INDEX_V(p_bone, bones.size(), false);
+	return bones[p_bone].ray_ik_enabled;
+}
+
+void Skeleton3D::set_bone_ray_ik_chain_length(int p_bone, int p_length) {
+	ERR_FAIL_INDEX(p_bone, bones.size());
+	bones.write[p_bone].ray_ik_chain_length = p_length;
+}
+
+int Skeleton3D::get_bone_ray_ik_chain_length(int p_bone) const {
+	ERR_FAIL_INDEX_V(p_bone, bones.size(), 0);
+	return bones[p_bone].ray_ik_chain_length;
+}
+
+
+void Skeleton3D::_update_ray_ik(int p_bone, const Vector3 &p_target) {
+	// Реализация FABRIK (Forward And Backward Reaching Inverse Kinematics)
+	int chain_len = bones[p_bone].ray_ik_chain_length;
+	if (chain_len <= 0) return;
+
+	LocalVector<int> chain;
+	int curr = p_bone;
+	for (int i = 0; i <= chain_len && curr != -1; i++) {
+		chain.push_back(curr);
+		curr = get_bone_parent(curr);
+	}
+
+	// 1. Собираем текущие глобальные позиции
+	LocalVector<Vector3> points;
+	for (uint32_t i = 0; i < chain.size(); i++) {
+		points.push_back(get_bone_global_pose(chain[i]).origin);
+	}
+
+	// 2. Прямой проход (к цели)
+	points[0] = p_target;
+	for (uint32_t i = 1; i < points.size(); i++) {
+		float d = points[i].distance_to(points[i-1]);
+		float l = get_bone_rest(chain[i-1]).origin.length();
+		points[i] = points[i-1] + (points[i] - points[i-1]).normalized() * l;
+	}
+
+	// 3. Обратный проход (к корню)
+	Vector3 root_pos = get_bone_global_pose(get_bone_parent(chain.back())).origin;
+	points.back() = root_pos;
+	for (int i = points.size() - 2; i >= 0; i--) {
+		float l = get_bone_rest(chain[i]).origin.length();
+		points[i] = points[i+1] + (points[i] - points[i+1]).normalized() * l;
+	}
+
+	// 4. Применяем новые трансформации
+	for (uint32_t i = 0; i < chain.size(); i++) {
+		Transform3D t = get_bone_global_pose(chain[i]);
+		t.origin = points[i];
+		set_bone_global_pose_override(chain[i], t, 1.0, true);
 	}
 }
