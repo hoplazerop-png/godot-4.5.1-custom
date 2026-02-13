@@ -51,14 +51,19 @@ class TreeItem;
 class VSeparator;
 
 class BonePropertiesEditor : public VBoxContainer {
-	GDCLASS(BonePropertiesEditor, VBoxContainer);
+    GDCLASS(BonePropertiesEditor, VBoxContainer);
 
-	EditorInspectorSection *section = nullptr;
+    EditorInspectorSection *section = nullptr;
 
-	EditorPropertyCheck *enabled_checkbox = nullptr;
-	EditorPropertyVector3 *position_property = nullptr;
-	EditorPropertyQuaternion *rotation_property = nullptr;
-	EditorPropertyVector3 *scale_property = nullptr;
+    EditorPropertyCheck *enabled_checkbox = nullptr;
+    // Твои добавки:
+    EditorPropertyCheck *ray_ik_enabled_checkbox = nullptr; 
+    EditorPropertyInteger *ray_ik_chain_length_property = nullptr; 
+
+    EditorPropertyVector3 *position_property = nullptr;
+    EditorPropertyQuaternion *rotation_property = nullptr;
+    EditorPropertyVector3 *scale_property = nullptr;
+    // ... дальше остальной код
 
 	EditorInspectorSection *rest_section = nullptr;
 	EditorPropertyTransform3D *rest_matrix = nullptr;
@@ -147,14 +152,7 @@ class Skeleton3DEditor : public VBoxContainer {
 	Button *key_rot_button = nullptr;
 	Button *key_scale_button = nullptr;
 	Button *key_insert_button = nullptr;
-	Button *key_insert_new_button = nullptr;
-	Button *key_mod_insert_button = nullptr;
-	Button *key_mod_insert_new_button = nullptr;
-
-	// To maintain the status while running editor.
-	void _loc_toggled(bool p_toggled_on);
-	void _rot_toggled(bool p_toggled_on);
-	void _scl_toggled(bool p_toggled_on);
+	Button *key_insert_all_button = nullptr;
 
 	EditorInspectorSection *bones_section = nullptr;
 
@@ -179,8 +177,7 @@ class Skeleton3DEditor : public VBoxContainer {
 	void reset_pose(const bool p_all_bones);
 	void pose_to_rest(const bool p_all_bones);
 
-	void _insert_keys(const bool p_all_bones);
-	void insert_keys(const bool p_all_bones, const bool p_enable_modifier);
+	void insert_keys(const bool p_all_bones);
 
 	void create_physical_skeleton();
 	PhysicalBone3D *create_physical_bone(int bone_id, int bone_child_id, const Vector<BoneInfo> &bones_infos);
@@ -255,10 +252,6 @@ class EditorInspectorPluginSkeleton : public EditorInspectorPlugin {
 	Skeleton3DEditor *skel_editor = nullptr;
 
 public:
-	bool loc_pressed = false;
-	bool rot_pressed = true;
-	bool scl_pressed = false;
-
 	virtual bool can_handle(Object *p_object) override;
 	virtual void parse_begin(Object *p_object) override;
 };
