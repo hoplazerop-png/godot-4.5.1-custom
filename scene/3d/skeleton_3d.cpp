@@ -93,7 +93,15 @@ bool Skeleton3D::_set(const StringName &p_path, const Variant &p_value) {
 		set_bone_parent(which, p_value);
 	} else if (what == "rest") {
 		set_bone_rest(which, p_value);
-	} else if (what == "enabled") {
+	} else if (what == "ray_ik_enabled" || what == SNAME("ray_ik_enabled")) {
+		set_bone_ray_ik_enabled(which, p_value);
+	} else if (what == "ray_ik_chain_length" || what == SNAME("ray_ik_chain_length")) {
+		set_bone_ray_ik_chain_length(which, p_value);
+	} else if (what == "ray_ik_enabled" || what == SNAME("ray_ik_enabled")) {
+		r_ret = is_bone_ray_ik_enabled(which);
+	} else if (what == "ray_ik_chain_length" || what == SNAME("ray_ik_chain_length")) {
+		r_ret = get_bone_ray_ik_chain_length(which);
+	} else } else if (what == "enabled") {
 		set_bone_enabled(which, p_value);
 	} else if (what == "position") {
 		set_bone_pose_position(which, p_value);
@@ -162,7 +170,15 @@ bool Skeleton3D::_get(const StringName &p_path, Variant &r_ret) const {
 		r_ret = get_bone_parent(which);
 	} else if (what == "rest") {
 		r_ret = get_bone_rest(which);
-	} else if (what == "enabled") {
+	} else if (what == "ray_ik_enabled" || what == SNAME("ray_ik_enabled")) {
+		set_bone_ray_ik_enabled(which, p_value);
+	} else if (what == "ray_ik_chain_length" || what == SNAME("ray_ik_chain_length")) {
+		set_bone_ray_ik_chain_length(which, p_value);
+	} else if (what == "ray_ik_enabled" || what == SNAME("ray_ik_enabled")) {
+		r_ret = is_bone_ray_ik_enabled(which);
+	} else if (what == "ray_ik_chain_length" || what == SNAME("ray_ik_chain_length")) {
+		r_ret = get_bone_ray_ik_chain_length(which);
+	} else } else if (what == "enabled") {
 		r_ret = is_bone_enabled(which);
 	} else if (what == "position") {
 		r_ret = get_bone_pose_position(which);
@@ -196,6 +212,8 @@ void Skeleton3D::_get_property_list(List<PropertyInfo> *p_list) const {
 		p_list->push_back(PropertyInfo(Variant::INT, prep + "parent", PROPERTY_HINT_RANGE, "-1," + itos(bones.size() - 1) + ",1", PROPERTY_USAGE_NO_EDITOR));
 		p_list->push_back(PropertyInfo(Variant::TRANSFORM3D, prep + "rest", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_READ_ONLY));
 		p_list->push_back(PropertyInfo(Variant::BOOL, prep + "enabled", PROPERTY_HINT_NONE, "", enabled_usage));
+		p_list->push_back(PropertyInfo(Variant::BOOL, prep + "ray_ik_enabled", PROPERTY_HINT_NONE, "", enabled_usage));
+		p_list->push_back(PropertyInfo(Variant::INT, prep + "ray_ik_chain_length", PROPERTY_HINT_RANGE, "0,100,1", enabled_usage));
 		p_list->push_back(PropertyInfo(Variant::VECTOR3, prep + "position", PROPERTY_HINT_NONE, "", xform_usage));
 		p_list->push_back(PropertyInfo(Variant::QUATERNION, prep + "rotation", PROPERTY_HINT_NONE, "", xform_usage));
 		p_list->push_back(PropertyInfo(Variant::VECTOR3, prep + "scale", PROPERTY_HINT_NONE, "", xform_usage));
@@ -1480,7 +1498,8 @@ void Skeleton3D::_update_ray_ik(int p_bone, const Vector3 &p_target) {
 	}
 
 	// 3. Обратный проход (к корню)
-	Vector3 root_pos = get_bone_global_pose(get_bone_parent(chain.back())).origin;
+	int root_parent_idx = get_bone_parent(chain.back());
+	Vector3 root_pos = (root_parent_idx != -1) ? get_bone_global_pose(root_parent_idx).origin : get_bone_global_rest(chain.back()).origin;
 	points.back() = root_pos;
 	for (int i = points.size() - 2; i >= 0; i--) {
 		float l = get_bone_rest(chain[i]).origin.length();

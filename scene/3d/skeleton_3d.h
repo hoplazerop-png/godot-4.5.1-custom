@@ -253,6 +253,11 @@ public:
 	bool is_bone_ray_ik_enabled(int p_bone) const;
 	void set_bone_ray_ik_chain_length(int p_bone, int p_length);
 	int get_bone_ray_ik_chain_length(int p_bone) const;
+	void _update_ray_ik(int p_bone, const Vector3 &p_target);
+	void _update_ray_ik(int p_bone, const Vector3 &p_target);
+	void _update_ray_ik(int p_bone, const Vector3 &p_target);
+	void _update_ray_ik(int p_bone, const Vector3 &p_target);
+	void _update_ray_ik(int p_bone, const Vector3 &p_target);
 	bool is_bone_enabled(int p_bone) const;
 
 	void set_show_rest_only(bool p_enabled);
